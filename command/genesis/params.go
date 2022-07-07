@@ -187,22 +187,33 @@ func (p *genesisParams) isValidatorNumberValid() bool {
 }
 
 func (p *genesisParams) initIBFTExtraData() {
-	if p.consensus != server.IBFTConsensus {
+	if p.consensus != server.IBFTConsensus && p.consensus != server.IBFTAvailConsensus {
 		return
 	}
 
-	ibftExtra := &ibft.IstanbulExtra{
-		Validators:    p.ibftValidators,
-		Seal:          []byte{},
-		CommittedSeal: [][]byte{},
-	}
+	if p.consensus == server.IBFTConsensus {
+		ibftExtra := &ibft.IstanbulExtra{
+			Validators:    p.ibftValidators,
+			Seal:          []byte{},
+			CommittedSeal: [][]byte{},
+		}
 
-	p.extraData = make([]byte, ibft.IstanbulExtraVanity)
-	p.extraData = ibftExtra.MarshalRLPTo(p.extraData)
+		p.extraData = make([]byte, ibft.IstanbulExtraVanity)
+		p.extraData = ibftExtra.MarshalRLPTo(p.extraData)
+	} else if p.consensus == server.IBFTAvailConsensus {
+		ibftExtra := &ibft.IstanbulExtra{
+			Validators:    p.ibftValidators,
+			Seal:          []byte{},
+			CommittedSeal: [][]byte{},
+		}
+
+		p.extraData = make([]byte, ibft.IstanbulExtraVanity)
+		p.extraData = ibftExtra.MarshalRLPTo(p.extraData)
+	}
 }
 
 func (p *genesisParams) initConsensusEngineConfig() {
-	if p.consensus != server.IBFTConsensus {
+	if p.consensus != server.IBFTConsensus && p.consensus != server.IBFTAvailConsensus {
 		p.consensusEngineConfig = map[string]interface{}{
 			p.consensusRaw: map[string]interface{}{},
 		}
@@ -220,11 +231,20 @@ func (p *genesisParams) initConsensusEngineConfig() {
 }
 
 func (p *genesisParams) initIBFTEngineMap(mechanism ibft.MechanismType) {
-	p.consensusEngineConfig = map[string]interface{}{
-		string(server.IBFTConsensus): map[string]interface{}{
-			"type":      mechanism,
-			"epochSize": p.epochSize,
-		},
+	if p.consensus == server.IBFTConsensus {
+		p.consensusEngineConfig = map[string]interface{}{
+			string(server.IBFTConsensus): map[string]interface{}{
+				"type":      mechanism,
+				"epochSize": p.epochSize,
+			},
+		}
+	} else if p.consensus == server.IBFTAvailConsensus {
+		p.consensusEngineConfig = map[string]interface{}{
+			string(server.IBFTAvailConsensus): map[string]interface{}{
+				"type":      mechanism,
+				"epochSize": p.epochSize,
+			},
+		}
 	}
 }
 

@@ -5,6 +5,7 @@ import (
 	consensusDev "github.com/0xPolygon/polygon-edge/consensus/dev"
 	consensusDummy "github.com/0xPolygon/polygon-edge/consensus/dummy"
 	consensusIBFT "github.com/0xPolygon/polygon-edge/consensus/ibft"
+	consensusIBFTAvail "github.com/0xPolygon/polygon-edge/consensus/ibft-avail"
 	"github.com/0xPolygon/polygon-edge/secrets"
 	"github.com/0xPolygon/polygon-edge/secrets/awsssm"
 	"github.com/0xPolygon/polygon-edge/secrets/gcpssm"
@@ -15,15 +16,17 @@ import (
 type ConsensusType string
 
 const (
-	DevConsensus   ConsensusType = "dev"
-	IBFTConsensus  ConsensusType = "ibft"
-	DummyConsensus ConsensusType = "dummy"
+	DevConsensus       ConsensusType = "dev"
+	IBFTConsensus      ConsensusType = "ibft"
+	IBFTAvailConsensus ConsensusType = "ibft-avail"
+	DummyConsensus     ConsensusType = "dummy"
 )
 
 var consensusBackends = map[ConsensusType]consensus.Factory{
-	DevConsensus:   consensusDev.Factory,
-	IBFTConsensus:  consensusIBFT.Factory,
-	DummyConsensus: consensusDummy.Factory,
+	DevConsensus:       consensusDev.Factory,
+	IBFTConsensus:      consensusIBFT.Factory,
+	IBFTAvailConsensus: consensusIBFTAvail.Factory,
+	DummyConsensus:     consensusDummy.Factory,
 }
 
 // secretsManagerBackends defines the SecretManager factories for different
@@ -37,6 +40,5 @@ var secretsManagerBackends = map[secrets.SecretsManagerType]secrets.SecretsManag
 
 func ConsensusSupported(value string) bool {
 	_, ok := consensusBackends[ConsensusType(value)]
-
 	return ok
 }
