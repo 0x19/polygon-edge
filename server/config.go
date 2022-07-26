@@ -21,6 +21,8 @@ type Config struct {
 	GRPCAddr   *net.TCPAddr
 	LibP2PAddr *net.TCPAddr
 
+	NodeType string
+
 	PriceLimit      uint64
 	MaxSlots        uint64
 	BlockTime       uint64

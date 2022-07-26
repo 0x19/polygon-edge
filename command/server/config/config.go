@@ -30,6 +30,7 @@ type Config struct {
 	IBFTBaseTimeout   uint64     `json:"ibft_base_time_s" yaml:"ibft_base_time_s"`
 	Headers           *Headers   `json:"headers" yaml:"headers"`
 	LogFilePath       string     `json:"log_to" yaml:"log_to"`
+	NodeType          string     `json:"node_type" yaml:"node_type"`
 }
 
 // Telemetry holds the config details for metric services.

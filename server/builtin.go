@@ -1,11 +1,12 @@
 package server
 
 import (
+	"fmt"
+
 	"github.com/0xPolygon/polygon-edge/consensus"
 	consensusDev "github.com/0xPolygon/polygon-edge/consensus/dev"
 	consensusDummy "github.com/0xPolygon/polygon-edge/consensus/dummy"
 	consensusIBFT "github.com/0xPolygon/polygon-edge/consensus/ibft"
-	consensusIBFTAvail "github.com/0xPolygon/polygon-edge/consensus/ibft-avail"
 	"github.com/0xPolygon/polygon-edge/secrets"
 	"github.com/0xPolygon/polygon-edge/secrets/awsssm"
 	"github.com/0xPolygon/polygon-edge/secrets/gcpssm"
@@ -16,17 +17,32 @@ import (
 type ConsensusType string
 
 const (
-	DevConsensus       ConsensusType = "dev"
-	IBFTConsensus      ConsensusType = "ibft"
-	IBFTAvailConsensus ConsensusType = "ibft-avail"
-	DummyConsensus     ConsensusType = "dummy"
+	DevConsensus   ConsensusType = "dev"
+	IBFTConsensus  ConsensusType = "ibft"
+	DummyConsensus ConsensusType = "dummy"
 )
 
 var consensusBackends = map[ConsensusType]consensus.Factory{
-	DevConsensus:       consensusDev.Factory,
-	IBFTConsensus:      consensusIBFT.Factory,
-	IBFTAvailConsensus: consensusIBFTAvail.Factory,
-	DummyConsensus:     consensusDummy.Factory,
+	DevConsensus:   consensusDev.Factory,
+	IBFTConsensus:  consensusIBFT.Factory,
+	DummyConsensus: consensusDummy.Factory,
+}
+
+func RegisterConsensus(ct ConsensusType, f consensus.Factory) error {
+	if ConsensusSupported(string(ct)) {
+		return fmt.Errorf("provided consensus '%s' is already registered", ct)
+	}
+	consensusBackends[ct] = f
+	return nil
+}
+
+func UnRegisterConsensus(ct ConsensusType) error {
+	if !ConsensusSupported(string(ct)) {
+		return fmt.Errorf("provided consensus '%s' is not registered", ct)
+	}
+
+	delete(consensusBackends, ct)
+	return nil
 }
 
 // secretsManagerBackends defines the SecretManager factories for different
