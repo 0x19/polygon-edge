@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/0xPolygon/polygon-edge/blockchain"
+	"github.com/0xPolygon/polygon-edge/helper/hex"
 	"github.com/0xPolygon/polygon-edge/helper/progress"
 	"github.com/0xPolygon/polygon-edge/state/runtime"
 	"github.com/0xPolygon/polygon-edge/types"
@@ -122,7 +123,7 @@ func TestEth_GetTransactionByHash(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
 
-		// nolint:forcetypeassert
+		//nolint:forcetypeassert
 		foundTxn := res.(*transaction)
 		assert.Equal(t, argUint64(testTxn.Nonce), foundTxn.Nonce)
 		assert.Equal(t, argUint64(block.Number()), *foundTxn.BlockNumber)
@@ -147,7 +148,7 @@ func TestEth_GetTransactionByHash(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
 
-		// nolint:forcetypeassert
+		//nolint:forcetypeassert
 		foundTxn := res.(*transaction)
 		assert.Equal(t, argUint64(testTxn.Nonce), foundTxn.Nonce)
 		assert.Nil(t, foundTxn.BlockNumber)
@@ -208,7 +209,7 @@ func TestEth_GetTransactionReceipt(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
 
-		// nolint:forcetypeassert
+		//nolint:forcetypeassert
 		response := res.(*receipt)
 		assert.Equal(t, txn.Hash, response.TxHash)
 		assert.Equal(t, block.Hash(), response.BlockHash)
@@ -228,7 +229,7 @@ func TestEth_Syncing(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
 
-		// nolint:forcetypeassert
+		//nolint:forcetypeassert
 		response := res.(progression)
 		assert.NotEqual(t, progress.ChainSyncBulk, response.Type)
 		assert.Equal(t, fmt.Sprintf("0x%x", 1), response.StartingBlock)
@@ -247,6 +248,32 @@ func TestEth_Syncing(t *testing.T) {
 	})
 }
 
+// if price-limit flag is set its value should be returned if it is higher than avg gas price
+func TestEth_GetPrice_PriceLimitSet(t *testing.T) {
+	priceLimit := uint64(100333)
+	store := newMockBlockStore()
+	// not using newTestEthEndpoint as we need to set priceLimit
+	eth := newTestEthEndpointWithPriceLimit(store, priceLimit)
+
+	t.Run("returns price limit flag value when it is larger than average gas price", func(t *testing.T) {
+		res, err := eth.GasPrice()
+		store.averageGasPrice = 0
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+
+		assert.Equal(t, hex.EncodeUint64(priceLimit), res)
+	})
+
+	t.Run("returns average gas price when it is larger than set price limit flag", func(t *testing.T) {
+		store.averageGasPrice = 500000
+		res, err := eth.GasPrice()
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+
+		assert.GreaterOrEqual(t, res, hex.EncodeUint64(priceLimit))
+	})
+}
+
 func TestEth_GasPrice(t *testing.T) {
 	store := newMockBlockStore()
 	store.averageGasPrice = 9999
@@ -256,9 +283,7 @@ func TestEth_GasPrice(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
 
-	// nolint:forcetypeassert
-	response := res.(string)
-	assert.Equal(t, fmt.Sprintf("0x%x", store.averageGasPrice), response)
+	assert.Equal(t, fmt.Sprintf("0x%x", store.averageGasPrice), res)
 }
 
 func TestEth_Call(t *testing.T) {

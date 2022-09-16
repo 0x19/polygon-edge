@@ -3,9 +3,10 @@ package server
 import (
 	"errors"
 	"fmt"
-	"github.com/0xPolygon/polygon-edge/command/server/config"
 	"math"
 	"net"
+
+	"github.com/0xPolygon/polygon-edge/command/server/config"
 
 	"github.com/0xPolygon/polygon-edge/network/common"
 
@@ -120,6 +121,11 @@ func (p *serverParams) initGenesisConfig() error {
 		p.rawConfig.GenesisPath,
 	); parseErr != nil {
 		return parseErr
+	}
+
+	// if block-gas-target flag is set override genesis.json value
+	if p.blockGasTarget != 0 {
+		p.genesisConfig.Params.BlockGasTarget = p.blockGasTarget
 	}
 
 	return nil

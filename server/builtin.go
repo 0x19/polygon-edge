@@ -1,6 +1,8 @@
 package server
 
 import (
+	"fmt"
+
 	"github.com/0xPolygon/polygon-edge/consensus"
 	consensusDev "github.com/0xPolygon/polygon-edge/consensus/dev"
 	consensusDummy "github.com/0xPolygon/polygon-edge/consensus/dummy"
@@ -39,4 +41,21 @@ func ConsensusSupported(value string) bool {
 	_, ok := consensusBackends[ConsensusType(value)]
 
 	return ok
+}
+
+func RegisterConsensus(ct ConsensusType, f consensus.Factory) error {
+	if ConsensusSupported(string(ct)) {
+		return fmt.Errorf("provided consensus '%s' is already registered", ct)
+	}
+	consensusBackends[ct] = f
+	return nil
+}
+
+func UnRegisterConsensus(ct ConsensusType) error {
+	if !ConsensusSupported(string(ct)) {
+		return fmt.Errorf("provided consensus '%s' is not registered", ct)
+	}
+
+	delete(consensusBackends, ct)
+	return nil
 }

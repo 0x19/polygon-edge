@@ -21,9 +21,10 @@ type Config struct {
 	GRPCAddr   *net.TCPAddr
 	LibP2PAddr *net.TCPAddr
 
-	PriceLimit uint64
-	MaxSlots   uint64
-	BlockTime  uint64
+	PriceLimit         uint64
+	MaxAccountEnqueued uint64
+	MaxSlots           uint64
+	BlockTime          uint64
 
 	Telemetry *Telemetry
 	Network   *network.Config
@@ -38,6 +39,7 @@ type Config struct {
 	LogLevel hclog.Level
 
 	LogFilePath string
+	NodeType    string `json:"node_type" yaml:"node_type"`
 }
 
 // Telemetry holds the config details for metric services
@@ -49,4 +51,6 @@ type Telemetry struct {
 type JSONRPC struct {
 	JSONRPCAddr              *net.TCPAddr
 	AccessControlAllowOrigin []string
+	BatchLengthLimit         uint64
+	BlockRangeLimit          uint64
 }
