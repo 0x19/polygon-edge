@@ -2,7 +2,6 @@ package evm
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/0xPolygon/polygon-edge/chain"
 	"github.com/0xPolygon/polygon-edge/state/runtime"
@@ -44,8 +43,6 @@ func (e *EVM) Run(c *runtime.Contract, host runtime.Host, config *chain.ForksInT
 	contract.bitmap.setCode(c.Code)
 
 	ret, err := contract.Run()
-
-	fmt.Printf("RETURNED: %+v \n", ret)
 
 	// We are probably doing this append magic to make sure that the slice doesn't have more capacity than it needs
 	var returnValue []byte

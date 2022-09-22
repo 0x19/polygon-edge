@@ -216,7 +216,6 @@ func (c *state) Run() ([]byte, error) {
 	for !c.stop {
 		if c.ip >= codeSize {
 			c.halt()
-
 			break
 		}
 

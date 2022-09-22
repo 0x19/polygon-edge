@@ -39,7 +39,6 @@ var secretsManagerBackends = map[secrets.SecretsManagerType]secrets.SecretsManag
 
 func ConsensusSupported(value string) bool {
 	_, ok := consensusBackends[ConsensusType(value)]
-
 	return ok
 }
 
