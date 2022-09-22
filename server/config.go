@@ -39,6 +39,8 @@ type Config struct {
 	LogLevel hclog.Level
 
 	LogFilePath string
+
+	NodeType string
 }
 
 // Telemetry holds the config details for metric services

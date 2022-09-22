@@ -3,9 +3,10 @@ package state
 import (
 	"errors"
 	"fmt"
-	"github.com/0xPolygon/polygon-edge/state/runtime/evm"
 	"math"
 	"math/big"
+
+	"github.com/0xPolygon/polygon-edge/state/runtime/evm"
 
 	"github.com/hashicorp/go-hclog"
 
@@ -318,6 +319,8 @@ func (t *Transition) Commit() (Snapshot, types.Hash) {
 }
 
 func (t *Transition) subGasPool(amount uint64) error {
+	fmt.Printf("GAS POOL: %v - AMOUNT: %v \n", t.gasPool, amount)
+
 	if t.gasPool < amount {
 		return ErrBlockLimitReached
 	}
