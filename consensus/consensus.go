@@ -71,6 +71,7 @@ type Params struct {
 	Metrics        *Metrics
 	SecretsManager secrets.SecretsManager
 	BlockTime      uint64
+	NodeType       string
 }
 
 // Factory is the factory function to create a discovery consensus
