@@ -130,7 +130,8 @@ func (p *predeployParams) initChain() error {
 
 func (p *predeployParams) updateGenesisConfig() error {
 	if p.genesisConfig.Genesis.Alloc[p.address] != nil {
-		return errAddressTaken
+		delete(p.genesisConfig.Genesis.Alloc, p.address)
+		//return errAddressTaken
 	}
 
 	predeployAccount, err := predeployment.GenerateGenesisAccountFromFile(
