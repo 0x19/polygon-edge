@@ -31,6 +31,7 @@ type Config struct {
 	JSONRPCBatchRequestLimit uint64     `json:"json_rpc_batch_request_limit" yaml:"json_rpc_batch_request_limit"`
 	JSONRPCBlockRangeLimit   uint64     `json:"json_rpc_block_range_limit" yaml:"json_rpc_block_range_limit"`
 	NodeType                 string     `json:"node_type" yaml:"node_type"`
+	JSONLogFormat            bool       `json:"json_log_format" yaml:"json_log_format"`
 }
 
 // Telemetry holds the config details for metric services.
